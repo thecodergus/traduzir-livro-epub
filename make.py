@@ -33,19 +33,14 @@ class ChatGPT:
                 .encode("utf8")
                 .decode()
             )
-            # format the translated text, the original text is eg: "\n\n['\\n柠檬\\n\\n', '梶井基次郎']", we need the
-            # element in the list, not the \n \n
             t_text = t_text.strip("\n")
             try:
                 t_text = ast.literal_eval(t_text)
             except Exception:
-                # some ["\n"] not literal_eval, not influence the result
                 pass
-            # openai has a time limit for api  Limit: 20 / min
             time.sleep(3)
         except Exception as e:
             print(str(e), "will sleep 60 seconds")
-            # TIME LIMIT for open api please pay
             time.sleep(60)
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
@@ -96,11 +91,9 @@ class BEPUB:
                         batch_count += 1
                         if batch_count == self.batch_size:
                             translated_batch = self.translate_model.translate([p.text for p in batch_p])
-                            # to avoid the openai response is not the same order as the request
                             batch_p[-1].string = batch_p[-1].text + ' '.join(map(str, translated_batch))
                             batch_p = []
                             batch_count = 0
-                    # Process any remaining paragraphs in the last batch
                 if batch_p:
                     translated_batch = self.translate_model.translate([p.text for p in batch_p])
                     for j, c_p in enumerate(batch_p): 

@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup as bs
 from ebooklib import epub
 from rich import print
 
-
-
+# Classe que representa o ChatGPT e sua função de tradução
 class ChatGPT:
     def __init__(self, key):
         self.key = key
@@ -16,16 +15,18 @@ class ChatGPT:
         print(text)
         openai.api_key = self.key
         try:
+            # Chamada à API do OpenAI para tradução
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "user",
-                        # english prompt here to save tokens
+                        # Prompt em inglês para economizar tokens
                         "content": f"Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements ",
                     }
                 ],
             )
+            # Extrair o texto traduzido do resultado da API
             t_text = (
                 completion["choices"][0]
                 .get("message")
@@ -42,6 +43,7 @@ class ChatGPT:
         except Exception as e:
             print(str(e), "will sleep 60 seconds")
             time.sleep(60)
+            # Tentativa novamente da chamada à API do OpenAI para tradução
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
@@ -66,7 +68,7 @@ class ChatGPT:
         print(t_text)
         return t_text
 
-
+# Classe que representa o livro EPUB e sua função de tradução
 class BEPUB:
     def __init__(self, epub_name, key, batch_size):
         self.epub_name = epub_name
@@ -96,7 +98,7 @@ class BEPUB:
                             batch_count = 0
                 if batch_p:
                     translated_batch = self.translate_model.translate([p.text for p in batch_p])
-                    for j, c_p in enumerate(batch_p): 
+                    for j, c_p in enumerate(batch_p):
                         c_p.string = c_p.text + translated_batch[j]
                     batch_p = []
                     batch_count = 0
@@ -105,7 +107,7 @@ class BEPUB:
         name = self.epub_name.split(".")[0]
         epub.write_epub(f"{name}_translated.epub", new_book, {})
 
-
+# Verificação se o script está sendo executado diretamente
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(

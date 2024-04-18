@@ -22,7 +22,7 @@ class ChatGPT:
                     {
                         "role": "user",
                         # english prompt here to save tokens
-                        "content": f"Please help me to translate `{text}` to Chinese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements ",
+                        "content": f"Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements ",
                     }
                 ],
             )
@@ -52,7 +52,7 @@ class ChatGPT:
                 messages=[
                     {
                         "role": "user",
-                         "content": f"Please help me to translate `{text}` to Chinese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements",
+                         "content": f"Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements",
                     }
                 ],
             )

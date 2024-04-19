@@ -1,4 +1,5 @@
 import argparse, time, openai, ast
+from typing import Union
 from bs4 import BeautifulSoup as bs
 from ebooklib import epub
 from rich import print
@@ -163,7 +164,7 @@ class BEPUB:
         epub.write_epub(f"{name}_translated.epub", new_book, {})
 
     def __translate_tag(
-        self, tag: str, item_name: str, soup: bs, batch: dict[str, int | any]
+        self, tag: str, item_name: str, soup: bs, batch: dict[str, Union[str, any]]
     ) -> None:
         """
         Traduz as tags HTML específicas em um arquivo HTML do livro EPUB.
@@ -184,7 +185,7 @@ class BEPUB:
                     translated_batch = self.translate_model.translate(
                         [part_.text for part_ in batch["content"]]
                     )
-                    batch["content"][-1].string = batch["content"][-1].text + " ".join(
+                    batch["content"][-1].string = batch["content"][-1].text + "".join(
                         map(str, translated_batch)
                     )
                     batch["content"] = []

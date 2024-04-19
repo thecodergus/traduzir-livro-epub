@@ -145,14 +145,6 @@ class BEPUB:
                 self.__translate_tag("h6", name, soup)  # Traduz as tags h6
                 self.__translate_tag("p", name, soup)  # Traduz as tags p
 
-                if batch_p:
-                    translated_batch = self.translate_model.translate(
-                        [p.text for p in batch_p]
-                    )
-                    for j, c_p in enumerate(batch_p):
-                        c_p.string = c_p.text + translated_batch[j]
-                    batch_p = []
-                    batch_count = 0
                 i.content = soup.prettify().encode()
             new_book.add_item(i)
         name = self.epub_name.split(".")[0]

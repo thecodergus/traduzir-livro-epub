@@ -136,13 +136,14 @@ class BEPUB:
                 soup = bs(i.content, "html.parser")
                 name: str = i.get_name()
 
-                self.__translate_tag("h1", name, soup)
-                self.__translate_tag("h2", name, soup)
-                self.__translate_tag("h3", name, soup)
-                self.__translate_tag("h4", name, soup)
-                self.__translate_tag("h5", name, soup)
-                self.__translate_tag("h6", name, soup)
-                self.__translate_tag("p", name, soup)
+                # Traduz as tags HTML específicas no arquivo HTML
+                self.__translate_tag("h1", name, soup)  # Traduz as tags h1
+                self.__translate_tag("h2", name, soup)  # Traduz as tags h2
+                self.__translate_tag("h3", name, soup)  # Traduz as tags h3
+                self.__translate_tag("h4", name, soup)  # Traduz as tags h4
+                self.__translate_tag("h5", name, soup)  # Traduz as tags h5
+                self.__translate_tag("h6", name, soup)  # Traduz as tags h6
+                self.__translate_tag("p", name, soup)  # Traduz as tags p
 
                 if batch_p:
                     translated_batch = self.translate_model.translate(

@@ -1,4 +1,4 @@
-import argparse, time, openai, ast, os
+import argparse, time, openai, ast, os, re
 from typing import Union
 from bs4 import BeautifulSoup as bs
 from ebooklib import epub
@@ -7,6 +7,10 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def contains_nonspace_char(s):
+    return bool(re.match("^(?=\\s*\\S).*$", s))
 
 
 class ChatGPT:
@@ -23,7 +27,7 @@ class ChatGPT:
                 messages=[
                     {
                         "role": "user",
-                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text""",
+                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text.""",
                     }
                 ],
             )
@@ -46,7 +50,7 @@ class ChatGPT:
                 messages=[
                     {
                         "role": "user",
-                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text""",
+                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text.""",
                     }
                 ],
             )
@@ -195,9 +199,13 @@ class BEPUB:
         print(f"Traduzindo {len(part_list)} {tag} em {item_name}")
         if len(part_list) > 0:
             for part in tqdm(part_list):
-                if part.string and not part.text.isdigit():
-                    translated = self.translate_model.translate(part.string, subjects)
-                    print(f"Original: {part.string}")
+                if (
+                    part.text
+                    and not part.text.isdigit()
+                    and contains_nonspace_char(part.text)
+                ):
+                    translated = self.translate_model.translate(part.text, subjects)
+                    print(f"Original: {part.text}")
                     print(f"Traduzido: {translated}")
 
                     part.string = translated

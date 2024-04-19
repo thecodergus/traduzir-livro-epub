@@ -204,8 +204,8 @@ class BEPUB:
                     and contains_nonspace_char(part.text)
                 ):
                     translated = self.translate_model.translate(part.text, subjects)
-                    print(f"Original: {part.text}")
-                    print(f"Traduzido: {translated}")
+                    # print(f"Original: {part.text}")
+                    # print(f"Traduzido: {translated}")
 
                     part.string = translated
 

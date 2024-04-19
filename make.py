@@ -2,6 +2,7 @@ import argparse, time, openai, ast
 from bs4 import BeautifulSoup as bs
 from ebooklib import epub
 from rich import print
+from tqdm import tqdm
 
 
 class ChatGPT:
@@ -10,7 +11,7 @@ class ChatGPT:
         self.key = key
 
     def translate(self, text):
-        print(text)
+        # print(text)
         # Define a chave da API da OpenAI para autenticar as requisições
         openai.api_key = self.key
         try:
@@ -71,7 +72,7 @@ class ChatGPT:
                 t_text = ast.literal_eval(t_text)
             except Exception:
                 pass
-        print(t_text)
+        # print(t_text)
         # Retorna o texto traduzido
         return t_text
 
@@ -106,29 +107,17 @@ class BEPUB:
             if i.get_type() == 9:
                 # Parseia o conteúdo do arquivo HTML usando a biblioteca BeautifulSoup
                 soup = bs(i.content, "html.parser")
-                # Encontra todos os parágrafos no arquivo HTML
-                p_list = soup.findAll("p")
-                for p in p_list:
-                    # Verifica se o parágrafo contém texto e não é apenas um número
-                    if p.text and not p.text.isdigit():
-                        # Adiciona o parágrafo à lista de parágrafos a serem traduzidos
-                        batch_p.append(p)
-                        # Incrementa o contador do tamanho do lote
-                        batch_count += 1
-                        # Verifica se o tamanho do lote atingiu o limite definido
-                        if batch_count == self.batch_size:
-                            # Traduz o lote de parágrafos usando a classe ChatGPT
-                            translated_batch = self.translate_model.translate(
-                                [p.text for p in batch_p]
-                            )
-                            # Substitui o último parágrafo do lote pelo texto traduzido
-                            batch_p[-1].string = batch_p[-1].text + " ".join(
-                                map(str, translated_batch)
-                            )
-                            # Limpa a lista de parágrafos a serem traduzidos
-                            batch_p = []
-                            # Reinicia o contador do tamanho do lote
-                            batch_count = 0
+                name: str = i.get_name()
+
+                # Traduz os títulos e parágrafos do arquivo HTML
+                self.__translate_tag("h1", name, soup)
+                self.__translate_tag("h2", name, soup)
+                self.__translate_tag("h3", name, soup)
+                self.__translate_tag("h4", name, soup)
+                self.__translate_tag("h5", name, soup)
+                self.__translate_tag("h6", name, soup)
+                self.__translate_tag("p", name, soup)
+
                 # Verifica se ainda há parágrafos na lista a serem traduzidos
                 if batch_p:
                     # Traduz o lote de parágrafos restante
@@ -148,6 +137,23 @@ class BEPUB:
         name = self.epub_name.split(".")[0]
         # Salva o livro traduzido em um novo arquivo EPUB
         epub.write_epub(f"{name}_translated.epub", new_book, {})
+
+    def __translate_tag(self, tag: str, item_name: str, soup: bs) -> None:
+        part_list = soup.findAll(tag)
+        print(f"Translating {len(part_list)} {tag} in {item_name}")
+        for part in tqdm(part_list):
+            if part.text and not part.text.isdigit():
+                batch_p.append(part)
+                batch_count += 1
+                if batch_count == self.batch_size:
+                    translated_batch = self.translate_model.translate(
+                        [part_.text for part_ in batch_p]
+                    )
+                    batch_p[-1].string = batch_p[-1].text + " ".join(
+                        map(str, translated_batch)
+                    )
+                    batch_p = []
+                    batch_count = 0
 
 
 if __name__ == "__main__":

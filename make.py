@@ -21,6 +21,8 @@ class ChatGPT:
 
         for text in texts:
             try:
+                text = text.replace('"', "“")
+
                 # Envia a requisição de tradução para a API da OpenAI
                 completion = openai.ChatCompletion.create(
                     # Define o modelo a ser usado na requisição de tradução

@@ -30,7 +30,7 @@ class ChatGPT:
                             # Define o papel do usuário na conversa com o modelo
                             "role": "user",
                             # Define o conteúdo da mensagem a ser enviada ao modelo, que é uma solicitação de tradução para português do Brasil mantendo o mesmo formato do texto original
-                            "content": f"""Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text. The text from a book with the following subjects: {subjects}""",
+                            "content": f"Please help me, translate the following text to Brazilian Portuguese, considering that it is a paragraph or title from a book with the genres: {subjects}. Please return only the translated text, without including the original text. Text to translate: {text}",
                         }
                     ],
                 )
@@ -60,7 +60,7 @@ class ChatGPT:
                     messages=[
                         {
                             "role": "user",
-                            "content": f"""Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text. The text from a book with the following subjects: {subjects}""",
+                            "content": f"Please help me, translate the following text to Brazilian Portuguese, considering that it is a paragraph or title from a book with the genres: {subjects}. Please return only the translated text, without including the original text. Text to translate: {text}",
                         }
                     ],
                 )

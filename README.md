@@ -1,25 +1,26 @@
-# translate epub books by openai api
-translate epub books Using AI translate, the translation is not perfect, but it is very interesting. Welcome to pr .
+# Traduzir livros epub pela api do openai
+Traduzir livros epub Usando a tradução da AI, a tradução não é perfeita, mas é muito interessante. Seja bem-vindo ao pr.
 
 ![image](https://raw.githubusercontent.com/zengzzzzz/zengzzzzz-img/main/tranlate_epub_book_by_openai/readme_pic.jpg)
 
-## ready
+## Pronto
 
-1. OpenAI api key
-2. epub books
+1. Chave da api do OpenAI
+2. Livros epub
 3. python3.8+
 
-## how to use
+## Como usar
 
 1. pip install -r requirements.txt
-2. run this shell: `python3 make.py --book_name ${book_name} --openai_key ${openai_key}`
+2. execute este shell: `python3 make.py --book_name ${book_name} --openai_key ${openai_key}`
 
-## attention
+## Atenção
 
-1. the openai api key is not free, you can apply for it on the [official website](https://platform.openai.com/)
+1. A chave da api do openai não é gratuita, você pode solicitá-la no [site oficial](https://platform.openai.com/)
 
-# thanks
+# Obrigado
 
-this project is based on the yihong's projects and I change it for myself. Batch translation is faster and less fee , suitable for those who do not pursue the perfect format .Delete the function which is not used. It is geared more toward programmers now than everyone else. 
+Este projeto é baseado nos projetos do yihong e eu o alterei para mim. A tradução em lote é mais rápida e menos cara, adequada para aqueles que não perseguem o formato perfeito. Exclua a função que não está sendo usada. Está mais voltado para programadores agora do que para todas as outras pessoas.
 
 - @[yihong](https://github.com/yihong0618)
+- @[Gustavo](https://github.com/thecodergus)

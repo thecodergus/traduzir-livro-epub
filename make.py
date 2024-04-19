@@ -49,12 +49,11 @@ class ChatGPT:
                 # Caso a avaliação falhe, ignora o erro e mantém o texto traduzido como string
                 pass
             # Aguarda 3 segundos antes de retornar o texto traduzido para evitar requisições muito frequentes à API
-            time.sleep(3)
         except Exception as e:
             # Caso ocorra alguma exceção na requisição à API, imprime a mensagem de erro e aguarda 60 segundos antes de tentar novamente
             print(str(e), "will sleep 60 seconds")
             # Repete a requisição de tradução à API
-            time.sleep(60)
+            time.sleep(10)
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[

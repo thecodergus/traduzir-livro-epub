@@ -14,72 +14,55 @@ class ChatGPT:
         # Armazena a chave da API da OpenAI para ser usada nas requisições
         self.key = key
 
-    def translate(self, texts: list[str], subjects: list[str]):
-        # print(text)
-        # Define a chave da API da OpenAI para autenticar as requisições
+    def translate(self, text: list[str]) -> list[str]:
         openai.api_key = self.key
-
-        for text in texts:
+        try:
+            completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements""",
+                    }
+                ],
+            )
+            t_text = (
+                completion["choices"][0]
+                .get("message")
+                .get("content")
+                .encode("utf8")
+                .decode()
+            )
+            t_text = t_text.strip("\n")
             try:
-                text = text.replace('"', "“")
-
-                # Envia a requisição de tradução para a API da OpenAI
-                completion = openai.ChatCompletion.create(
-                    # Define o modelo a ser usado na requisição de tradução
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {
-                            # Define o papel do usuário na conversa com o modelo
-                            "role": "user",
-                            # Define o conteúdo da mensagem a ser enviada ao modelo, que é uma solicitação de tradução para português do Brasil mantendo o mesmo formato do texto original
-                            "content": f"Please help me, translate the following text to Brazilian Portuguese, considering that it is a paragraph or title from a book with the genres: {subjects}. Please return only the translated text, without including the original text. Text to translate: {text}",
-                        }
-                    ],
-                )
-                # Extrai o texto traduzido da resposta da API
-                t_text = (
-                    completion["choices"][0]
-                    .get("message")
-                    .get("content")
-                    .encode("utf8")
-                    .decode()
-                )
-                # Remove as quebras de linha do texto traduzido
-                t_text = t_text.strip("\n")
-                try:
-                    # Tenta avaliar o texto traduzido como uma expressão Python literal
-                    t_text = ast.literal_eval(t_text)
-                except Exception:
-                    # Caso a avaliação falhe, ignora o erro e mantém o texto traduzido como string
-                    pass
-            except Exception as e:
-                # Caso ocorra alguma exceção na requisição à API, imprime a mensagem de erro e aguarda 60 segundos antes de tentar novamente
-                print(str(e), "will sleep 60 seconds")
-                # Repete a requisição de tradução à API
-                time.sleep(10)
-                completion = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": f"Please help me, translate the following text to Brazilian Portuguese, considering that it is a paragraph or title from a book with the genres: {subjects}. Please return only the translated text, without including the original text. Text to translate: {text}",
-                        }
-                    ],
-                )
-                t_text = (
-                    completion["choices"][0]
-                    .get("message")
-                    .get("content")
-                    .encode("utf8")
-                    .decode()
-                )
-                t_text = t_text.strip("\n")
-                try:
-                    t_text = ast.literal_eval(t_text)
-                except Exception:
-                    pass
-        # print(t_text)
-        # Retorna o texto traduzido
+                t_text = ast.literal_eval(t_text)
+            except Exception:
+                pass
+        except Exception as e:
+            print(str(e), "will sleep 60 seconds")
+            time.sleep(60)
+            completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements""",
+                    }
+                ],
+            )
+            t_text = (
+                completion["choices"][0]
+                .get("message")
+                .get("content")
+                .encode("utf8")
+                .decode()
+            )
+            t_text = t_text.strip("\n")
+            try:
+                t_text = ast.literal_eval(t_text)
+            except Exception:
+                pass
+        print(t_text)
         return t_text
 
 
@@ -216,7 +199,7 @@ class BEPUB:
                         translated_batch = self.translate_model.translate(
                             [part_.text for part_ in batch["content"]], subjects
                         )
-                        batch["content"][-1].string = batch["content"][-1].text + "".join(
+                        batch["content"][-1].string = "".join(
                             map(str, translated_batch)
                         )
                         batch["content"] = []

@@ -14,15 +14,16 @@ class ChatGPT:
         # Armazena a chave da API da OpenAI para ser usada nas requisições
         self.key = key
 
-    def translate(self, text: list[str]) -> list[str]:
+    def translate(self, text: str, subjects: list[str]) -> list[str]:
         openai.api_key = self.key
+        text = text.replace('"', "“")
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "user",
-                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements""",
+                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text""",
                     }
                 ],
             )
@@ -39,14 +40,13 @@ class ChatGPT:
             except Exception:
                 pass
         except Exception as e:
-            print(str(e), "will sleep 60 seconds")
-            time.sleep(60)
+            time.sleep(10)
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "user",
-                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements""",
+                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text""",
                     }
                 ],
             )
@@ -62,7 +62,10 @@ class ChatGPT:
                 t_text = ast.literal_eval(t_text)
             except Exception:
                 pass
-        print(t_text)
+
+        # Removendo caracteres indesejados
+        t_text = t_text.replace("\xa0", "")
+
         return t_text
 
 
@@ -192,18 +195,12 @@ class BEPUB:
         print(f"Traduzindo {len(part_list)} {tag} em {item_name}")
         if len(part_list) > 0:
             for part in tqdm(part_list):
-                if part.text and not part.text.isdigit():
-                    batch["content"].append(part)
-                    batch["count"] += 1
-                    if batch["count"] == self.batch_size:
-                        translated_batch = self.translate_model.translate(
-                            [part_.text for part_ in batch["content"]], subjects
-                        )
-                        batch["content"][-1].string = "".join(
-                            map(str, translated_batch)
-                        )
-                        batch["content"] = []
-                        batch["count"] = 0
+                if part.string and not part.text.isdigit():
+                    translated = self.translate_model.translate(part.string, subjects)
+                    print(f"Original: {part.string}")
+                    print(f"Traduzido: {translated}")
+
+                    part.string = translated
 
 
 if __name__ == "__main__":

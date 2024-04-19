@@ -14,66 +14,68 @@ class ChatGPT:
         # Armazena a chave da API da OpenAI para ser usada nas requisições
         self.key = key
 
-    def translate(self, text):
+    def translate(self, texts: list[str], subjects: list[str]):
         # print(text)
         # Define a chave da API da OpenAI para autenticar as requisições
         openai.api_key = self.key
-        try:
-            # Envia a requisição de tradução para a API da OpenAI
-            completion = openai.ChatCompletion.create(
-                # Define o modelo a ser usado na requisição de tradução
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        # Define o papel do usuário na conversa com o modelo
-                        "role": "user",
-                        # Define o conteúdo da mensagem a ser enviada ao modelo, que é uma solicitação de tradução para português do Brasil mantendo o mesmo formato do texto original
-                        "content": f"Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements ",
-                    }
-                ],
-            )
-            # Extrai o texto traduzido da resposta da API
-            t_text = (
-                completion["choices"][0]
-                .get("message")
-                .get("content")
-                .encode("utf8")
-                .decode()
-            )
-            # Remove as quebras de linha do texto traduzido
-            t_text = t_text.strip("\n")
+
+        for text in texts:
             try:
-                # Tenta avaliar o texto traduzido como uma expressão Python literal
-                t_text = ast.literal_eval(t_text)
-            except Exception:
-                # Caso a avaliação falhe, ignora o erro e mantém o texto traduzido como string
-                pass
-        except Exception as e:
-            # Caso ocorra alguma exceção na requisição à API, imprime a mensagem de erro e aguarda 60 segundos antes de tentar novamente
-            print(str(e), "will sleep 60 seconds")
-            # Repete a requisição de tradução à API
-            time.sleep(10)
-            completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": f"Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text, maintain the same formatting as the original textual list individual elements",
-                    }
-                ],
-            )
-            t_text = (
-                completion["choices"][0]
-                .get("message")
-                .get("content")
-                .encode("utf8")
-                .decode()
-            )
-            t_text = t_text.strip("\n")
-            try:
-                t_text = ast.literal_eval(t_text)
-            except Exception:
-                pass
+                # Envia a requisição de tradução para a API da OpenAI
+                completion = openai.ChatCompletion.create(
+                    # Define o modelo a ser usado na requisição de tradução
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            # Define o papel do usuário na conversa com o modelo
+                            "role": "user",
+                            # Define o conteúdo da mensagem a ser enviada ao modelo, que é uma solicitação de tradução para português do Brasil mantendo o mesmo formato do texto original
+                            "content": f"""Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text. The text from a book with the following subjects: {subjects}""",
+                        }
+                    ],
+                )
+                # Extrai o texto traduzido da resposta da API
+                t_text = (
+                    completion["choices"][0]
+                    .get("message")
+                    .get("content")
+                    .encode("utf8")
+                    .decode()
+                )
+                # Remove as quebras de linha do texto traduzido
+                t_text = t_text.strip("\n")
+                try:
+                    # Tenta avaliar o texto traduzido como uma expressão Python literal
+                    t_text = ast.literal_eval(t_text)
+                except Exception:
+                    # Caso a avaliação falhe, ignora o erro e mantém o texto traduzido como string
+                    pass
+            except Exception as e:
+                # Caso ocorra alguma exceção na requisição à API, imprime a mensagem de erro e aguarda 60 segundos antes de tentar novamente
+                print(str(e), "will sleep 60 seconds")
+                # Repete a requisição de tradução à API
+                time.sleep(10)
+                completion = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": f"""Please help me to translate `{text}` to Brazilian Portuguese, please return only translated content not include the origin text. The text from a book with the following subjects: {subjects}""",
+                        }
+                    ],
+                )
+                t_text = (
+                    completion["choices"][0]
+                    .get("message")
+                    .get("content")
+                    .encode("utf8")
+                    .decode()
+                )
+                t_text = t_text.strip("\n")
+                try:
+                    t_text = ast.literal_eval(t_text)
+                except Exception:
+                    pass
         # print(t_text)
         # Retorna o texto traduzido
         return t_text
@@ -135,19 +137,37 @@ class BEPUB:
             "content": [],
             "count": 0,
         }
+        subjects = [
+            subject[0] for subject in self.origin_book.get_metadata("DC", "subject")
+        ]
+
         for i in self.origin_book.get_items():
             if i.get_type() == 9:
                 soup = bs(i.content, "html.parser")
                 name: str = i.get_name()
 
                 # Traduz as tags HTML específicas no arquivo HTML
-                self.__translate_tag("h1", name, soup, batch)  # Traduz as tags h1
-                self.__translate_tag("h2", name, soup, batch)  # Traduz as tags h2
-                self.__translate_tag("h3", name, soup, batch)  # Traduz as tags h3
-                self.__translate_tag("h4", name, soup, batch)  # Traduz as tags h4
-                self.__translate_tag("h5", name, soup, batch)  # Traduz as tags h5
-                self.__translate_tag("h6", name, soup, batch)  # Traduz as tags h6
-                self.__translate_tag("p", name, soup, batch)  # Traduz as tags p
+                self.__translate_tag(
+                    "h1", name, soup, batch, subjects
+                )  # Traduz as tags h1
+                self.__translate_tag(
+                    "h2", name, soup, batch, subjects
+                )  # Traduz as tags h2
+                self.__translate_tag(
+                    "h3", name, soup, batch, subjects
+                )  # Traduz as tags h3
+                self.__translate_tag(
+                    "h4", name, soup, batch, subjects
+                )  # Traduz as tags h4
+                self.__translate_tag(
+                    "h5", name, soup, batch, subjects
+                )  # Traduz as tags h5
+                self.__translate_tag(
+                    "h6", name, soup, batch, subjects
+                )  # Traduz as tags h6
+                self.__translate_tag(
+                    "p", name, soup, batch, subjects
+                )  # Traduz as tags p
 
                 # Traduz o lote de parágrafos restante
                 if batch["content"]:
@@ -165,7 +185,12 @@ class BEPUB:
         epub.write_epub(f"{name}_translated.epub", new_book, {})
 
     def __translate_tag(
-        self, tag: str, item_name: str, soup: bs, batch: dict[str, Union[str, any]]
+        self,
+        tag: str,
+        item_name: str,
+        soup: bs,
+        batch: dict[str, Union[str, any]],
+        subjects: list[str],
     ) -> None:
         """
         Traduz as tags HTML específicas em um arquivo HTML do livro EPUB.
@@ -184,7 +209,7 @@ class BEPUB:
                 batch["count"] += 1
                 if batch["count"] == self.batch_size:
                     translated_batch = self.translate_model.translate(
-                        [part_.text for part_ in batch["content"]]
+                        [part_.text for part_ in batch["content"]], subjects
                     )
                     batch["content"][-1].string = batch["content"][-1].text + "".join(
                         map(str, translated_batch)

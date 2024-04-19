@@ -207,19 +207,20 @@ class BEPUB:
         """
         part_list = soup.findAll(tag)
         print(f"Traduzindo {len(part_list)} {tag} em {item_name}")
-        for part in tqdm(part_list):
-            if part.text and not part.text.isdigit():
-                batch["content"].append(part)
-                batch["count"] += 1
-                if batch["count"] == self.batch_size:
-                    translated_batch = self.translate_model.translate(
-                        [part_.text for part_ in batch["content"]], subjects
-                    )
-                    batch["content"][-1].string = batch["content"][-1].text + "".join(
-                        map(str, translated_batch)
-                    )
-                    batch["content"] = []
-                    batch["count"] = 0
+        if len(part_list) > 0:
+            for part in tqdm(part_list):
+                if part.text and not part.text.isdigit():
+                    batch["content"].append(part)
+                    batch["count"] += 1
+                    if batch["count"] == self.batch_size:
+                        translated_batch = self.translate_model.translate(
+                            [part_.text for part_ in batch["content"]], subjects
+                        )
+                        batch["content"][-1].string = batch["content"][-1].text + "".join(
+                            map(str, translated_batch)
+                        )
+                        batch["content"] = []
+                        batch["count"] = 0
 
 
 if __name__ == "__main__":

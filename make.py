@@ -1,7 +1,7 @@
 import argparse, time, openai, ast, os, re
 from typing import Union
 from bs4 import BeautifulSoup as bs
-from ebooklib import epub
+from ebooklib import epub, ITEM_FONT, ITEM_IMAGE, ITEM_STYLE, ITEM_SCRIPT, ITEM_DOCUMENT
 from rich import print
 from tqdm import tqdm
 from dotenv import load_dotenv
@@ -134,32 +134,25 @@ class BEPUB:
         ]
 
         for i in self.origin_book.get_items():
-            if i.get_type() == 9:
+            if i.get_type() == ITEM_DOCUMENT:
+                # epub.
                 soup = bs(i.content, "html.parser")
                 name: str = i.get_name()
 
                 # Traduz as tags HTML específicas no arquivo HTML
-                self.__translate_tag(
-                    "h1", name, soup, batch, subjects
-                )  # Traduz as tags h1
-                self.__translate_tag(
-                    "h2", name, soup, batch, subjects
-                )  # Traduz as tags h2
-                self.__translate_tag(
-                    "h3", name, soup, batch, subjects
-                )  # Traduz as tags h3
-                self.__translate_tag(
-                    "h4", name, soup, batch, subjects
-                )  # Traduz as tags h4
-                self.__translate_tag(
-                    "h5", name, soup, batch, subjects
-                )  # Traduz as tags h5
-                self.__translate_tag(
-                    "h6", name, soup, batch, subjects
-                )  # Traduz as tags h6
-                self.__translate_tag(
-                    "p", name, soup, batch, subjects
-                )  # Traduz as tags p
+                self.__translate_tag("em", name, soup, batch, subjects)
+                self.__translate_tag("strong", name, soup, batch, subjects)
+                self.__translate_tag("h1", name, soup, batch, subjects)
+                self.__translate_tag("h2", name, soup, batch, subjects)
+                self.__translate_tag("h3", name, soup, batch, subjects)
+                self.__translate_tag("h4", name, soup, batch, subjects)
+                self.__translate_tag("h5", name, soup, batch, subjects)
+                self.__translate_tag("h6", name, soup, batch, subjects)
+                self.__translate_tag("p", name, soup, batch, subjects)
+                self.__translate_tag("dt", name, soup, batch, subjects)
+                self.__translate_tag("dd", name, soup, batch, subjects)
+                self.__translate_tag("a", name, soup, batch, subjects)
+                self.__translate_tag("td", name, soup, batch, subjects)
 
                 # Traduz o lote de parágrafos restante
                 if batch["content"]:

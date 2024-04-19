@@ -18,7 +18,7 @@ class ChatGPT:
         # Armazena a chave da API da OpenAI para ser usada nas requisições
         self.key = key
 
-    def translate(self, text: str, subjects: list[str]) -> list[str]:
+    def translate(self, text: str, subjects: list[str]) -> str:
         openai.api_key = self.key
         text = text.replace('"', "“")
         try:

@@ -21,7 +21,8 @@ A principal função deste projeto é traduzir livros epub em lote usando a api 
 
 # Obrigado
 
-Este projeto é baseado nos projetos do yihong e eu o alterei para mim. A tradução em lote é mais rápida e menos cara, adequada para aqueles que não perseguem o formato perfeito. Exclua a função que não está sendo usada. Está mais voltado para programadores agora do que para todas as outras pessoas.
+Este projeto é baseado nos projetos do yihong e outro do zengzzzzz e eu o alterei para mim. A tradução em lote é mais rápida e menos cara, adequada para aqueles que não perseguem o formato perfeito. Exclua a função que não está sendo usada. Está mais voltado para programadores agora do que para todas as outras pessoas.
 
 - @[yihong](https://github.com/yihong0618)
+- @[zengzzzzz](https://github.com/zengzzzzz)
 - @[Gustavo](https://github.com/thecodergus)

@@ -173,8 +173,7 @@ class BEPUB:
 
                 i.content = soup.prettify().encode()
             new_book.add_item(i)
-            if i.get_name() == "part2.xhtml":
-                break
+
         name = self.epub_name.split(".")[0]
         epub.write_epub(f"{name}_translated.epub", new_book, {})
 

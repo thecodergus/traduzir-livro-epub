@@ -147,6 +147,7 @@ class BEPUB:
                 self.__translate_tag("h6", name, soup, batch)  # Traduz as tags h6
                 self.__translate_tag("p", name, soup, batch)  # Traduz as tags p
 
+                # Traduz o lote de parágrafos restante
                 if batch["content"]:
                     translated_batch = self.translate_model.translate(
                         [p.text for p in batch["content"]]

@@ -78,38 +78,64 @@ class ChatGPT:
 
 
 class BEPUB:
+    """
+    Classe responsável por traduzir um livro EPUB.
+
+    Args:
+        epub_name (str): O nome do arquivo EPUB a ser traduzido.
+        key (str): A chave para inicializar a classe ChatGPT para realizar a tradução do texto.
+        batch_size (int): O tamanho do lote de texto a ser traduzido de cada vez.
+
+    Attributes:
+        epub_name (str): O nome do arquivo EPUB a ser traduzido.
+        translate_model (ChatGPT): A instância da classe ChatGPT para realizar a tradução do texto.
+        origin_book (EpubBook): O livro EPUB original a ser traduzido.
+        batch_size (int): O tamanho do lote de texto a ser traduzido de cada vez.
+
+    Methods:
+        translate_book: Traduz o livro EPUB.
+        __translate_tag: Traduz as tags HTML específicas em um arquivo HTML do livro EPUB.
+
+    """
+
     def __init__(self, epub_name, key, batch_size):
-        # Armazena o nome do arquivo EPUB a ser traduzido
         self.epub_name = epub_name
-        # Inicializa a classe ChatGPT para realizar a tradução do texto
         self.translate_model = ChatGPT(key)
-        # Lê o arquivo EPUB usando a biblioteca ebooklib
         self.origin_book = epub.read_epub(self.epub_name)
-        # Armazena o tamanho do lote de texto a ser traduzido de cada vez
         self.batch_size = batch_size
 
     def translate_book(self):
-        # Cria um novo objeto do tipo EpubBook para armazenar o livro traduzido
+        """
+        Traduz o livro EPUB.
+
+        Cria um novo objeto do tipo EpubBook para armazenar o livro traduzido.
+        Copia os metadados do livro original para o livro traduzido.
+        Copia a coluna vertebral do livro original para o livro traduzido.
+        Copia o sumário do livro original para o livro traduzido.
+        Itera sobre todos os itens do livro original.
+        Verifica se o item é um arquivo HTML.
+        Parseia o conteúdo do arquivo HTML usando a biblioteca BeautifulSoup.
+        Traduz as tags HTML específicas no arquivo HTML.
+        Verifica se ainda há parágrafos na lista a serem traduzidos.
+        Traduz o lote de parágrafos restante.
+        Substitui cada parágrafo pelo texto traduzido correspondente.
+        Atualiza o conteúdo do arquivo HTML com os parágrafos traduzidos.
+        Adiciona o item atualizado ao livro traduzido.
+        Extrai o nome base do arquivo EPUB original.
+        Salva o livro traduzido em um novo arquivo EPUB.
+
+        """
         new_book = epub.EpubBook()
-        # Copia os metadados do livro original para o livro traduzido
         new_book.metadata = self.origin_book.metadata
-        # Copia a coluna vertebral do livro original para o livro traduzido
         new_book.spine = self.origin_book.spine
-        # Copia o sumário do livro original para o livro traduzido
         new_book.toc = self.origin_book.toc
-        # Inicializa uma lista para armazenar os parágrafos a serem traduzidos em cada lote
         batch_p = []
-        # Inicializa um contador para controlar o tamanho do lote
         batch_count = 0
-        # Iteração sobre todos os itens do livro original
         for i in self.origin_book.get_items():
-            # Verifica se o item é um arquivo HTML (tipo 9 corresponde a arquivos HTML no formato EPUB)
             if i.get_type() == 9:
-                # Parseia o conteúdo do arquivo HTML usando a biblioteca BeautifulSoup
                 soup = bs(i.content, "html.parser")
                 name: str = i.get_name()
 
-                # Traduz os títulos e parágrafos do arquivo HTML
                 self.__translate_tag("h1", name, soup)
                 self.__translate_tag("h2", name, soup)
                 self.__translate_tag("h3", name, soup)
@@ -118,29 +144,31 @@ class BEPUB:
                 self.__translate_tag("h6", name, soup)
                 self.__translate_tag("p", name, soup)
 
-                # Verifica se ainda há parágrafos na lista a serem traduzidos
                 if batch_p:
-                    # Traduz o lote de parágrafos restante
                     translated_batch = self.translate_model.translate(
                         [p.text for p in batch_p]
                     )
                     for j, c_p in enumerate(batch_p):
-                        # Substitui cada parágrafo pelo texto traduzido correspondente
                         c_p.string = c_p.text + translated_batch[j]
                     batch_p = []
                     batch_count = 0
-                # Atualiza o conteúdo do arquivo HTML com os parágrafos traduzidos
                 i.content = soup.prettify().encode()
-            # Adiciona o item atualizado ao livro traduzido
             new_book.add_item(i)
-        # Extrai o nome base do arquivo EPUB original
         name = self.epub_name.split(".")[0]
-        # Salva o livro traduzido em um novo arquivo EPUB
         epub.write_epub(f"{name}_translated.epub", new_book, {})
 
     def __translate_tag(self, tag: str, item_name: str, soup: bs) -> None:
+        """
+        Traduz as tags HTML específicas em um arquivo HTML do livro EPUB.
+
+        Args:
+            tag (str): A tag HTML a ser traduzida.
+            item_name (str): O nome do item do livro EPUB.
+            soup (BeautifulSoup): O objeto BeautifulSoup que representa o arquivo HTML.
+
+        """
         part_list = soup.findAll(tag)
-        print(f"Translating {len(part_list)} {tag} in {item_name}")
+        print(f"Traduzindo {len(part_list)} {tag} em {item_name}")
         for part in tqdm(part_list):
             if part.text and not part.text.isdigit():
                 batch_p.append(part)

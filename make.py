@@ -1,9 +1,12 @@
-import argparse, time, openai, ast
+import argparse, time, openai, ast, os
 from typing import Union
 from bs4 import BeautifulSoup as bs
 from ebooklib import epub
 from rich import print
 from tqdm import tqdm
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class ChatGPT:
@@ -221,7 +224,8 @@ if __name__ == "__main__":
     )
     # Parseia os argumentos da linha de comando
     options = parser.parse_args()
-    OPENAI_API_KEY = options.openai_key
+
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY") or None
     if not OPENAI_API_KEY:
         # Verifica se a chave da API da OpenAI foi fornecida
         raise Exception("Need openai API key, please google how to")

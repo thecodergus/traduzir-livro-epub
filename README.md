@@ -1,5 +1,6 @@
 # Traduzir livros epub pela api do openai
-Traduzir livros epub Usando a tradução da AI, a tradução não é perfeita, mas é muito interessante. Seja bem-vindo ao pr.
+
+A principal função deste projeto é traduzir livros epub em lote usando a api do openai. A tradução não é perfeita, mas é muito interessante. Seja bem-vindo ao projeto. O foco fica para traduzções para o Português do Brasil.
 
 ![image](https://raw.githubusercontent.com/zengzzzzz/zengzzzzz-img/main/tranlate_epub_book_by_openai/readme_pic.jpg)
 

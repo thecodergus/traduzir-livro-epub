@@ -13,7 +13,8 @@ A principal função deste projeto é traduzir livros epub em lote usando a api 
 ## Como usar
 
 1. pip install -r requirements.txt
-2. execute este shell: `python3 make.py --book_name ${book_name} --openai_key ${openai_key}`
+2. Criar um arquivo `.env` com a seguinte variável 'OPENAI_API_KEY' e adicionar uma chave da api do openai
+3. execute este shell: `python3 make.py --book_name ${book_name}`
 
 ## Atenção
 

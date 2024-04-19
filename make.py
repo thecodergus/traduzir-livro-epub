@@ -129,28 +129,41 @@ class BEPUB:
         new_book.metadata = self.origin_book.metadata
         new_book.spine = self.origin_book.spine
         new_book.toc = self.origin_book.toc
-        batch_p = []
-        batch_count = 0
+        batch = {
+            "content": [],
+            "count": 0,
+        }
         for i in self.origin_book.get_items():
             if i.get_type() == 9:
                 soup = bs(i.content, "html.parser")
                 name: str = i.get_name()
 
                 # Traduz as tags HTML específicas no arquivo HTML
-                self.__translate_tag("h1", name, soup)  # Traduz as tags h1
-                self.__translate_tag("h2", name, soup)  # Traduz as tags h2
-                self.__translate_tag("h3", name, soup)  # Traduz as tags h3
-                self.__translate_tag("h4", name, soup)  # Traduz as tags h4
-                self.__translate_tag("h5", name, soup)  # Traduz as tags h5
-                self.__translate_tag("h6", name, soup)  # Traduz as tags h6
-                self.__translate_tag("p", name, soup)  # Traduz as tags p
+                self.__translate_tag("h1", name, soup, batch)  # Traduz as tags h1
+                self.__translate_tag("h2", name, soup, batch)  # Traduz as tags h2
+                self.__translate_tag("h3", name, soup, batch)  # Traduz as tags h3
+                self.__translate_tag("h4", name, soup, batch)  # Traduz as tags h4
+                self.__translate_tag("h5", name, soup, batch)  # Traduz as tags h5
+                self.__translate_tag("h6", name, soup, batch)  # Traduz as tags h6
+                self.__translate_tag("p", name, soup, batch)  # Traduz as tags p
+
+                if batch["content"]:
+                    translated_batch = self.translate_model.translate(
+                        [p.text for p in batch["content"]]
+                    )
+                    for j, c_p in enumerate(batch["content"]):
+                        c_p.string = c_p.text + translated_batch[j]
+                    batch["content"] = []
+                    batch["count"] = 0
 
                 i.content = soup.prettify().encode()
             new_book.add_item(i)
         name = self.epub_name.split(".")[0]
         epub.write_epub(f"{name}_translated.epub", new_book, {})
 
-    def __translate_tag(self, tag: str, item_name: str, soup: bs) -> None:
+    def __translate_tag(
+        self, tag: str, item_name: str, soup: bs, batch: dict[str, int | any]
+    ) -> None:
         """
         Traduz as tags HTML específicas em um arquivo HTML do livro EPUB.
 
@@ -164,23 +177,17 @@ class BEPUB:
         print(f"Traduzindo {len(part_list)} {tag} em {item_name}")
         for part in tqdm(part_list):
             if part.text and not part.text.isdigit():
-                batch_p.append(part)
-                batch_count += 1
-                if batch_count == self.batch_size:
+                batch["content"].append(part)
+                batch["count"] += 1
+                if batch["count"] == self.batch_size:
                     translated_batch = self.translate_model.translate(
-                        [part_.text for part_ in batch_p]
+                        [part_.text for part_ in batch["content"]]
                     )
-                    batch_p[-1].string = batch_p[-1].text + " ".join(
+                    batch["content"][-1].string = batch["content"][-1].text + " ".join(
                         map(str, translated_batch)
                     )
-                    batch_p = []
-                    batch_count = 0
-        if batch_p:
-            translated_batch = self.translate_model.translate([p.text for p in batch_p])
-            for j, c_p in enumerate(batch_p):
-                c_p.string = c_p.text + translated_batch[j]
-            batch_p = []
-            batch_count = 0
+                    batch["content"] = []
+                    batch["count"] = 0
 
 
 if __name__ == "__main__":

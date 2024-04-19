@@ -174,7 +174,7 @@ class BEPUB:
                 # Traduz o lote de parágrafos restante
                 if batch["content"]:
                     translated_batch = self.translate_model.translate(
-                        [p.text for p in batch["content"]]
+                        [p.text for p in batch["content"]], subjects
                     )
                     for j, c_p in enumerate(batch["content"]):
                         c_p.string = c_p.text + translated_batch[j]
@@ -183,6 +183,8 @@ class BEPUB:
 
                 i.content = soup.prettify().encode()
             new_book.add_item(i)
+            if i.get_name() == "part2.xhtml":
+                break
         name = self.epub_name.split(".")[0]
         epub.write_epub(f"{name}_translated.epub", new_book, {})
 

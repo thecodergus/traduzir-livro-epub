@@ -205,14 +205,6 @@ if __name__ == "__main__":
         type=str,
         help="your epub book name",
     )
-    # Adiciona um argumento para a chave da API da OpenAI
-    parser.add_argument(
-        "--openai_key",
-        dest="openai_key",
-        type=str,
-        default="",
-        help="openai api key",
-    )
     # Adiciona um argumento para o tamanho do lote de texto a ser traduzido de cada vez
     parser.add_argument(
         "--batch_size",

@@ -140,9 +140,6 @@ class BEPUB:
                 name: str = i.get_name()
 
                 # Traduz as tags HTML específicas no arquivo HTML
-                self.__translate_tag("em", name, soup, batch, subjects)
-                self.__translate_tag("strong", name, soup, batch, subjects)
-                self.__translate_tag("span", name, soup, batch, subjects)
                 self.__translate_tag("h1", name, soup, batch, subjects)
                 self.__translate_tag("h2", name, soup, batch, subjects)
                 self.__translate_tag("h3", name, soup, batch, subjects)
@@ -153,7 +150,10 @@ class BEPUB:
                 self.__translate_tag("dt", name, soup, batch, subjects)
                 self.__translate_tag("dd", name, soup, batch, subjects)
                 self.__translate_tag("a", name, soup, batch, subjects)
-                self.__translate_tag("td", name, soup, batch, subjects)
+                # self.__translate_tag("td", name, soup, batch, subjects)
+                # self.__translate_tag("em", name, soup, batch, subjects)
+                # self.__translate_tag("strong", name, soup, batch, subjects)
+                self.__translate_tag("span", name, soup, batch, subjects)
 
                 # Traduz o lote de parágrafos restante
                 if batch["content"]:

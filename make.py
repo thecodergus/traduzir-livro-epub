@@ -19,58 +19,61 @@ class ChatGPT:
         self.key = key
 
     def translate(self, text: str, subjects: list[str]) -> str:
-        openai.api_key = self.key
-        text = text.replace('"', "“")
         try:
-            completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text.""",
-                    }
-                ],
-            )
-            t_text = (
-                completion["choices"][0]
-                .get("message")
-                .get("content")
-                .encode("utf8")
-                .decode()
-            )
-            t_text = t_text.strip("\n")
+            openai.api_key = self.key
+            text = text.replace('"', "“")
             try:
-                t_text = ast.literal_eval(t_text)
-            except Exception:
-                pass
-        except Exception as e:
-            time.sleep(10)
-            completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text.""",
-                    }
-                ],
-            )
-            t_text = (
-                completion["choices"][0]
-                .get("message")
-                .get("content")
-                .encode("utf8")
-                .decode()
-            )
-            t_text = t_text.strip("\n")
-            try:
-                t_text = ast.literal_eval(t_text)
-            except Exception:
-                pass
+                completion = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text.""",
+                        }
+                    ],
+                )
+                t_text = (
+                    completion["choices"][0]
+                    .get("message")
+                    .get("content")
+                    .encode("utf8")
+                    .decode()
+                )
+                t_text = t_text.strip("\n")
+                try:
+                    t_text = ast.literal_eval(t_text)
+                except Exception:
+                    pass
+            except Exception as e:
+                time.sleep(10)
+                completion = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": f"""Please help me to translate `{text}` to Brazilian Porguese, please return only translated content not include the origin text.""",
+                        }
+                    ],
+                )
+                t_text = (
+                    completion["choices"][0]
+                    .get("message")
+                    .get("content")
+                    .encode("utf8")
+                    .decode()
+                )
+                t_text = t_text.strip("\n")
+                try:
+                    t_text = ast.literal_eval(t_text)
+                except Exception:
+                    pass
 
-        # Removendo caracteres indesejados
-        t_text = t_text.replace("\xa0", "")
+            # Removendo caracteres indesejados
+            t_text = t_text.replace("\xa0", "")
 
-        return t_text
+            return t_text
+        except:
+            return text
 
 
 class BEPUB:

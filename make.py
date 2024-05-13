@@ -69,7 +69,10 @@ class ChatGPT:
                     pass
 
             # Removendo caracteres indesejados
-            t_text = t_text.replace("\xa0", "")
+            try:
+                t_text = t_text.replace("\xa0", "")
+            except:
+                pass
 
             return t_text
         except:
